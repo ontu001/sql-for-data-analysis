@@ -102,3 +102,74 @@ where
 
 
 
+--- IN , NOT IN --- to filter data from your specified condition
+select * from student where gender in ('Male','Others');
+select * from student where gender not in ('Male','Others');
+
+
+
+
+--BETWEEN-- To filter data between a range/condition
+
+select * from student where gpa between 3 and 3.5;
+
+
+
+--LIKE -- to filter data based on similarities/guess
+select * from student where first_name like 'R%'; -- '%' means anything after R
+select * from student where first_name like '_o%'; -- '_' means single character before o
+
+
+
+---- COALESCE ---- To handle null value
+select first_name, last_name , coalesce(gpa,3.3) from student; -- it replace the null value into 3.3
+
+
+
+
+-- AGGERAGATED FUNCTION ---
+select
+	avg(coalesce(gpa,3.5)) -- find avegrage with null handle
+from
+	student;
+
+
+
+select
+	avg(gpa) 
+from
+	student
+where
+	gpa is not null; -- find avegrage without null
+
+
+
+select
+	max(coalesce(gpa,3.5))-- find max with null handle
+from
+	student;
+
+
+
+select
+	min(coalesce(gpa,3.5))-- find min with null handle
+from
+	student;
+
+
+
+-- GROUP BY -- To perform aggregated function based on category
+select
+	gender,
+	count(*) as count_person,
+	round(avg(gpa),2) as avg_gpa,
+	round(max(gpa),2) as max_gpa,
+	round(min(gpa),2) as min_gpa
+from
+	student
+group by
+	gender
+order by
+	count_person desc;
+
+
