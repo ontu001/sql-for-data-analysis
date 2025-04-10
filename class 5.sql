@@ -131,3 +131,130 @@ select
     end as Discount_Percentage
 from
     products;
+
+
+
+
+
+
+
+-- Subquery (Query inside a query). Use for extracts complex result.
+
+-- Find those products which have higher price than the average price. 
+select
+	*
+from
+	products
+where
+	price > (select
+	avg(price)
+from
+	products)
+
+
+
+-- Find those products which have minimum price. 
+select
+	*
+from
+	products
+where
+	price = (select
+	min(price)
+from
+	products)
+
+
+
+
+
+-- Window Function
+--Make a minimum price column which will find the minimum price for each group
+Select
+	product_id,
+	product_name,
+	price,
+	group_id,
+	min(price) over (partition by group_id)
+from
+	products
+
+
+
+--Make a average price column which will find the average price for each group
+Select
+	product_id,
+	product_name,
+	price,
+	group_id,
+	avg(price) over (partition by group_id)
+from
+	products
+
+
+
+
+-- Create a serial/row number for each group
+Select
+	product_id,
+	product_name,
+	price,
+	group_id,
+	row_number() over (partition by group_id)
+from
+	products
+
+
+
+
+-- Find the highest price prodcut from each group/product_category.
+select
+	product_name,
+	price
+from
+(Select
+	product_id,
+	product_name,
+	price,
+	group_id,
+	row_number() over (partition by group_id order by price desc) as row_num
+from
+	products)
+where
+	row_num = 1
+order by
+	price desc;
+
+
+
+
+
+
+
+--Rank ( use for positioning based on a column) -- After a repeat value it skip the next number , ex: 4,4,6
+-- Positioning the product based on price column
+Select
+	product_id,
+	product_name,
+	price,
+	group_id,
+	rank() over (partition by group_id order by price desc)
+from
+	products
+
+
+
+--dense_ank ( use for positioning based on a column) -- After a repeat value it  dosen't skip the next number , ex: 4,4,5
+-- Positioning the product based on price column
+Select
+	product_id,
+	product_name,
+	price,
+	group_id,
+	dense_rank() over (partition by group_id order by price desc)
+from
+	products
+
+
+
+
