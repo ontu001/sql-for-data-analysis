@@ -258,3 +258,127 @@ from
 
 
 
+
+
+
+
+-- Find out the product from smartphone group/product_category
+
+--Solve using join
+select
+	*
+from
+	products
+inner join 
+	product_groups
+	on
+		products.group_id = product_groups.group_id
+where
+	group_name = 'Smartphone'
+
+
+
+
+--solve using subquery with 'EXISTS' , it will return the result if the property is exist.
+select
+	*
+from
+	products
+where exists(
+
+select
+	1 -- Best practice is to return 1 when the subquery condition is true
+from
+	product_groups
+where
+	products.group_id = product_groups.group_id
+and
+	group_name = 'Smartphone'
+)
+
+
+
+
+
+--'NOT EXISTS' , used to see if a value is not returned by a subquery
+select
+	*
+from
+	products
+where not exists(
+
+select
+	1 -- Best practice is to return 1 when the subquery condition is true
+from
+	product_groups
+where
+	products.group_id = product_groups.group_id
+and
+	group_name = 'Smartphone'
+)
+
+
+
+
+
+
+
+
+-- Any & All operator  - Use any for a specific instance of a group
+-- Find those product which have similar price with group 2.
+select
+	product_name,
+	group_id,
+	price
+from
+	products
+where
+	price = any (
+select
+	price
+from
+	products
+where
+	group_id = 2
+	);
+
+
+
+-- Find those products which are less expensive than group 2 products
+select
+	product_name,
+	group_id,
+	price
+from
+	products
+where
+	price < all (
+select
+	price
+from
+	products
+where
+	group_id = 2
+	);
+
+
+
+
+
+-- 'VIEW' use to store query for future use
+-- Find the products under smartphone_category and save the query table/result as 'smartphone_products'
+create
+	view smartphone_products as
+select
+	product_name,
+	price
+from
+	products
+where
+	group_id = 1;
+
+
+select * from smartphone_products;
+
+-- Delete the smartphone_products view
+drop view smartphone_products;
